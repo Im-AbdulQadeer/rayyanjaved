@@ -7,7 +7,7 @@
 
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { background: #fdfefe; }
+  html, body { background: #fdfefe; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                  "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
@@ -33,6 +33,14 @@
     font-size: 17px;
     color: #5d6f83;
     line-height: 1.2;
+  }
+  /* centered accent line under the header text */
+  .hd-rule {
+    width: 80px;
+    height: 2px;
+    background: #2a3f5f;
+    border-radius: 1px;
+    margin: 14px auto 0;
   }
 
   /* ---------- card ---------- */
@@ -131,6 +139,8 @@
   <div class="hd-title">中文考试成绩在线验证结果查询</div>
   <div class="hd-sub"><br>汉考国际教育科技（北京）有限公司（CTI）</div>
 
+  <div class="hd-rule"></div>
+
   <div class="card">
 
     <!-- Section 1: test taker -->
@@ -224,5 +234,52 @@
 
   </div>
 </div>
+
+<script>
+(function () {
+  var DESIGN_W = 1000; /* fixed desktop layout width used for the scaled preview */
+  var mq = window.matchMedia('(max-width: 767px)');
+  var page = document.querySelector('.page');
+
+  function reset() {
+    page.style.width = '';
+    page.style.transform = '';
+    page.style.transformOrigin = '';
+    page.style.marginLeft = '';
+    page.style.overflow = '';
+    document.body.style.height = '';
+    document.body.style.overflow = '';
+  }
+
+  function fit() {
+    if (!mq.matches) { reset(); return; }
+    var vw = document.documentElement.clientWidth;
+    var vh = window.innerHeight;
+    if (!vw || !vh || !page) return;
+
+    /* render the complete desktop layout at a fixed design width */
+    page.style.width = DESIGN_W + 'px';
+    page.style.transform = 'none';
+    page.style.overflow = 'hidden';
+    var naturalH = page.scrollHeight;
+
+    /* zoom out so the WHOLE form (top to bottom) fits one screen */
+    var s = Math.min(vw / DESIGN_W, vh / naturalH);
+    page.style.transformOrigin = 'top left';
+    page.style.transform = 'scale(' + s + ')';
+    page.style.marginLeft = Math.max(0, (vw - DESIGN_W * s) / 2) + 'px';
+
+    /* reserve only the scaled space -> no scrollbars */
+    document.body.style.height = Math.ceil(naturalH * s) + 'px';
+    document.body.style.overflow = 'hidden';
+  }
+
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', fit);
+  window.addEventListener('load', fit);
+  if (mq.addEventListener) mq.addEventListener('change', fit);
+  fit();
+})();
+</script>
 </body>
 </html>
